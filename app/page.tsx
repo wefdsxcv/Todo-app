@@ -1,103 +1,81 @@
-import Image from "next/image";
+"use client"; //appはデフォルトでサーバーコンポーネントなので状態管理が使えるクライアントコンポーネントに
 
-export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
+import { useState, useEffect } from "react";
+import axios from "axios";//サーバーからjsonが返ってくる時自動でパースしてくれる
+
+type Todo = {
+  id: number;
+  title: string;
+  createdAt: string;
+};//dbで定義したものと同じオブジェクトを作成
+
+export default function Home() {//defalut でページだと認識
+  // Todo リストの state
+  const [todos, setTodos] = useState<Todo[]>([]);//useState<型>(初期値)　([])は空の配列
+  // 入力フォームの state
+  const [input, setInput] = useState<string>("");//jsでは文字列もオブジェクトのように扱う。jsのオブジェクトはプロパティだけでなく、メソッドも持てる
+
+  // 初回レンダリング時にAPI(db)からTodo を取得
+  useEffect(() => {
+    axios.get("/api/todos").then(res => setTodos(res.data));
+  },[]);//空の配列を渡すと、コンポーネントの初回レンダリング時にのみ実行される
+  
+  // Todo 追加
+  const  addTodo = async() => {
+    if (input.trim() === "") return;//.trim()は前後の空白を削除。もし空ならスキップ
+    const res = await axios.post("/api/todos",{title:input});
+    setTodos([...todos,res.data]);//...todos で既存の配列を展開し、新しいTodoを追加した新しい配列を作成
+    setInput("");//空に
+  };
+
+  // Todo 削除
+  const removeTodo = async(id: number) => {//idはnumber(数値)でなければならない　tsの型注釈
+    await axios.delete("/api/todos",{data:{id}}); // ← ここでボディに id を含める
+    setTodos(todos.filter(t => t.id !== id));//filterメソッドは配列の各要素を順番にチェックして、条件が true のものだけを新しい配列に残す
+  };//t.id == id の時falseとなり、新しい配列には含まれない。
+
+//Tailwind CSS とは？CSS を直接書かずに、HTML タグに「クラス名」を付けてスタイルを付けるフレームワーク
+
+//{todos.map((todo, index) => ( 　mapメソッド .map((todo) => ...) → 配列の中から 1 つずつ todo を取り出す。取り出した todo を元に <li>...</li> を作る
+//<li key={todo.id} 　　　　　     React が各要素を識別するための一意のキー。todo.id idがkeyに使われる。
+//{todo.title}                    JSX の中で JavaScript の値を表示。今回は<li> の中に表示。
+//() => removeTodo(index) 　　　　無名関数（名前のない関数）クリックしたときにだけ実行される関数
+//<li </li>                      今回は一つの<li>の中に{todo.title}と <button Delete（これはボタンに表示される文字） </button>がある。
+ return (
+  <div className="min-h-screen flex flex-col items-center justify-between p-8">
+    <h1 className="text-2xl font-bold mb-6">My Todo List</h1>
+    <ul className="w-full max-w-md mb-6">
+      {todos.map((todo) => (
+        <li key={todo.id} 
+        className="flex justify-between items-center bg-gray-100 rounded p-2 mb-2"
+        >
+          {todo.title}
+            <button
+            className="text-red-500 font-semibold px-2 py-1 rounded hover:bg-red-100"
+            onClick={() => removeTodo(todo.id)}
+            >
+              Delete
+            </button>
+        </li>
+      ))}
+    </ul>
+  
+   {/* 入力フォームと Add ボタン */}
+      <div className="w-full max-w-md flex justify-between items-center border-t pt-4">
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Add a new task"
+          className="flex-1 p-2 border rounded mr-2 focus:outline-none focus:ring focus:border-blue-300"
         />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          onClick={addTodo}
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          Add
+        </button>
+      </div>
     </div>
   );
 }
