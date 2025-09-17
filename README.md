@@ -1,6 +1,8 @@
-next.js Tailwindcss sqlite prisma でtodoアプリを作ってみた。
+next.js Tailwindcss　App Router　sqlite prisma でtodoアプリを作ってみた。
 
 npx create-next-app@latest my-todo-app
+
+npm install axios
 
 Prisma をインストール
 npm install prisma --save-dev
@@ -25,7 +27,13 @@ model Todo {
   createdAt DateTime @default(now())
 }
 
+マイグレーションで DB 作成
 npx prisma migrate dev --name init
 
-app/page.tsx　（メインページ）コメント文でコードの説明
+/app/api/todos/route.ts を作る（App Router）
+
+app/page.tsx　（メインページ）
+
+コメント文でコードの説明
+tailwindcss(css)についてはまだよくわかってないので、コードみて理解できるぐらいにはなりたい。
 
