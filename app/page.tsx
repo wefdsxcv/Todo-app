@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import axios from "axios";//サーバーからjsonが返ってくる時自動でパースしてくれる
+import './style.css';//外部スタイルシートをimportするため、htmlなら<link>で囲んで
 
 type Todo = {
   id: number;
@@ -36,46 +37,32 @@ export default function Home() {//defalut でページだと認識
 
 //Tailwind CSS とは？CSS を直接書かずに、HTML タグに「クラス名」を付けてスタイルを付けるフレームワーク
 
-//{todos.map((todo, index) => ( 　mapメソッド .map((todo) => ...) → 配列の中から 1 つずつ todo を取り出す。取り出した todo を元に <li>...</li> を作る
-//<li key={todo.id} 　　　　　     React が各要素を識別するための一意のキー。todo.id idがkeyに使われる。
-//{todo.title}                    JSX の中で JavaScript の値を表示。今回は<li> の中に表示。
-//() => removeTodo(index) 　　　　無名関数（名前のない関数）クリックしたときにだけ実行される関数
-//<li </li>                      今回は一つの<li>の中に{todo.title}と <button Delete（これはボタンに表示される文字） </button>がある。
  return (
-  <div className="min-h-screen flex flex-col items-center justify-between p-8">
-    <h1 className="text-2xl font-bold mb-6">My Todo List</h1>
-    <ul className="w-full max-w-md mb-6">
+  <div className="container">
+    <h1 className="title">My Todo List</h1>
+    <ul className="todo-list">
       {todos.map((todo) => (
-        <li key={todo.id} 
-        className="flex justify-between items-center bg-gray-100 rounded p-2 mb-2"
-        >
+        <li key={todo.id} className="todo-item">
           {todo.title}
-            <button
-            className="text-red-500 font-semibold px-2 py-1 rounded hover:bg-red-100"
-            onClick={() => removeTodo(todo.id)}
-            >
-              Delete
-            </button>
+          <button className="delete-btn" onClick={() => removeTodo(todo.id)}>
+            Delete
+          </button>
         </li>
       ))}
     </ul>
-  
-   {/* 入力フォームと Add ボタン */}
-      <div className="w-full max-w-md flex justify-between items-center border-t pt-4">
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Add a new task"
-          className="flex-1 p-2 border rounded mr-2 focus:outline-none focus:ring focus:border-blue-300"
-        />
-        <button
-          onClick={addTodo}
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        >
-          Add
-        </button>
-      </div>
+
+    <div className="input-area">
+      <input
+        type="text"
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        placeholder="Add a new task"
+        className="input"
+      />
+      <button onClick={addTodo} className="add-btn">
+        Add
+      </button>
     </div>
-  );
+  </div>
+ );
 }
