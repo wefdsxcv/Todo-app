@@ -1,5 +1,5 @@
-ミスってreadmeが消えました。webで書いてて、よくわかんなくなった。
 git hubの使い方と、基本用語をまとめておく
+html,cssについての基本もまとめておく
 
 ～基本用語～
 commit（コミット）	
@@ -41,6 +41,150 @@ git pull Todo-app main --rebase
 
 Step 5: リモートに push
 git push Todo-app main
+
+～html,css基礎～
+
+：ページ構造系タグ：
+
+；<div>
+レイアウトを区切るために使う
+CSSでスタイルを当てたり、JSXでグループ化するのに必須
+
+例：
+<div class="card">
+  <h2>タイトル</h2>
+  <p>内容です。</p>
+</div>
+
+；<h1> ~ <h6>
+見出し
+<h1> が一番大きくて重要、 <h6> が一番小さい
+
+；<p>
+段落（paragraph）
+テキストをひとまとまりにするときに使う
+
+；<ul> と <li>
+<ul>: unordered list（順序なしリスト）
+<li>: list item（リストの中身）
+
+例：
+<ul>
+  <li>りんご</li>
+  <li>みかん</li>
+  <li>ぶどう</li>
+</ul>
+
+：フォーム系タグ：
+；<input type="text">
+
+・ユーザーが文字を入力できるフィールド
+
+    ・type で種類を変えられる
+
+        text: テキスト入力
+        number: 数字専用
+        password: ●●●で表示される
+        checkbox: チェックボックス
+        radio: ラジオボタン
+
+例：
+
+<input type="text" placeholder="名前を入力してください">
+<input type="password" placeholder="パスワード">
+<input type="checkbox">利用規約に同意
+
+<input> は 空要素タグ と呼ばれていて、「中身を入れる」ことができないタイプ。
+だから </input> みたいな閉じタグは存在しません。
+一方で、<button> は「中に文字や要素を入れる」から閉じタグが必要
+
+；<button>
+
+・ボタン
+
+クリックでイベントを発生させる
+
+デフォルトだと「送信ボタン」として働く（フォームの中だと submit になる）
+
+例：
+
+<button>クリックしてね</button>
+<button type="button">ただのボタン</button>
+<button type="submit">送信</button>
+
+・属性（attribute）
+；class 
+
+class: 複数の要素にスタイルや動きをまとめて当てる
+
+例：
+
+<p class="error-text">エラーです</p>
+
+；type / placeholder
+
+type: inputの種類（text, password, number など）
+
+placeholder: 入力欄に表示するヒント（入力すると消える）
+
+例：
+
+<input type="text" placeholder="メールアドレスを入力">
+
+value
+
+<input> に「中の値（入力されている文字）」を持たせる属性
+
+入力前に「初期値」を入れておくこともできる
+
+Reactでは「入力欄の中身 = 状態(state)」として扱うのが基本。
+これを 制御されたコンポーネント (Controlled Component)
+
+例（HTML）：
+
+<input type="text" value="デフォルト値">
+
+例（React）：
+
+const [name, setName] = useState(""); // 状態を作る
+
+return (
+  <input
+    type="text"
+    value={name}   // ← 入力欄の値は必ず state "name"
+    onChange={(e) => setName(e.target.value)} // ← 入力されるたびに state 更新
+  />
+);
+
+
+
+
+；onChange, onClick（React特有のイベント）
+
+onClick: ボタンや要素をクリックしたときに動く関数を指定する
+
+onChange: input の内容が変わったときに動く
+
+例（React）：
+
+<button onClick={() => alert("クリックされました!")}>クリック</button>
+
+onClick={...} ← ボタンがクリックされた時に実行する関数を渡す
+
+() => alert("クリックされました!") ← 関数そのもの
+
+() は「引数なし」
+
+=> は「アロー関数」
+
+alert("クリックされました!") が実際に動く処理
+
+<input
+  type="text"
+  value={name}
+  onChange={(e) => setName(e.target.value)}
+/>
+
 
 
 ～todoアプリのせつめい～
